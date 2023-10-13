@@ -1,21 +1,51 @@
 import React, { useReducer, useState } from 'react';
 import { Tarefa, TTarefa } from './components/Tarefa';
 
-function App() {
-  const [texto, setTexto] = useState('');
-  const [listaTarefas, setListaTarefas] = useState<TTarefa[]>([]);
+type ReducerState = {
+  listaTarefas: TTarefa[];
+};
 
-  const onAdicionar = () => {
-    if (!texto) return;
-    setListaTarefas((prev) => {
+type ReducerAction = {
+  type: 'ADD' | 'CHECK' | 'REMOVE';
+  callback: () => any;
+  payload: Partial<TTarefa>;
+};
+
+function reducer(state: ReducerState, action: ReducerAction): ReducerState {
+  switch (action.type) {
+    case 'ADD':
+      if (action.payload.texto === undefined) return state;
+
       const novaTarefa: TTarefa = {
         id: Date.now(),
-        texto: texto,
+        texto: action.payload.texto || 'vazio',
         feita: false,
       };
-      return [...prev, novaTarefa];
-    });
-    setTexto('');
+
+      //setTexto('');
+
+      const listaTarefas = [...state.listaTarefas, novaTarefa];
+      return { ...state, listaTarefas };
+
+    case 'CHECK':
+      return state;
+
+    case 'REMOVE':
+      return state;
+
+    default:
+      return state;
+  }
+}
+
+type Reducer<S, A> = (prevState: S, action: A) => S;
+
+function App() {
+  const [texto, setTexto] = useState('');
+  const [state, dispatch] = useReducer(reducer: R, {});
+
+  const onAdicionar = () => {
+    dispatch({ type: 'ADD', payload: { texto } });
   };
 
   const onMarcar = (id: number) => {
