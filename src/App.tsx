@@ -1,20 +1,41 @@
 import React, { useReducer, useState } from 'react';
 import { Tarefa, TTarefa } from './components/Tarefa';
 
-type ReducerState = {
-  listaTarefas: TTarefa[];
-};
+const initialState = { listaTarefas: [] as TTarefa[] };
 
-type ReducerAction = {
-  type: 'ADD' | 'CHECK' | 'REMOVE';
-  callback: () => any;
-  payload: Partial<TTarefa>;
-};
+const enum REDUCER_ACTION_TYPE {
+  ADICIONAR,
+  MARCAR,
+  REMOVER,
+}
 
-function reducer(state: ReducerState, action: ReducerAction): ReducerState {
+type ReducerAction =
+  | {
+      type: REDUCER_ACTION_TYPE.ADICIONAR;
+      payload: {
+        texto: string;
+      };
+    }
+  | {
+      type: REDUCER_ACTION_TYPE.MARCAR;
+      payload: {
+        idMarcar: number;
+      };
+    }
+  | {
+      type: REDUCER_ACTION_TYPE.REMOVER;
+      payload: {
+        idRemover: number;
+      };
+    };
+
+function reducer(
+  state: typeof initialState,
+  action: ReducerAction
+): typeof initialState {
   switch (action.type) {
-    case 'ADD':
-      if (action.payload.texto === undefined) return state;
+    case REDUCER_ACTION_TYPE.ADICIONAR:
+      if (action.payload.texto === '') return state;
 
       const novaTarefa: TTarefa = {
         id: Date.now(),
@@ -22,47 +43,47 @@ function reducer(state: ReducerState, action: ReducerAction): ReducerState {
         feita: false,
       };
 
-      //setTexto('');
+      return { ...state, listaTarefas: [...state.listaTarefas, novaTarefa] };
 
-      const listaTarefas = [...state.listaTarefas, novaTarefa];
-      return { ...state, listaTarefas };
+    case REDUCER_ACTION_TYPE.MARCAR:
+      return {
+        ...state,
+        listaTarefas: state.listaTarefas.map((tarefa) => {
+          if (tarefa.id === action.payload.idMarcar) {
+            return { ...tarefa, feita: !tarefa.feita };
+          }
+          return tarefa;
+        }),
+      };
 
-    case 'CHECK':
-      return state;
-
-    case 'REMOVE':
-      return state;
+    case REDUCER_ACTION_TYPE.REMOVER:
+      return {
+        ...state,
+        listaTarefas: state.listaTarefas.filter(
+          (tarefa) => tarefa.id !== action.payload.idRemover
+        ),
+      };
 
     default:
-      return state;
+      throw new Error('Ação não encontrada');
   }
 }
 
-type Reducer<S, A> = (prevState: S, action: A) => S;
-
 function App() {
   const [texto, setTexto] = useState('');
-  const [state, dispatch] = useReducer(reducer: R, {});
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const onAdicionar = () => {
-    dispatch({ type: 'ADD', payload: { texto } });
+    dispatch({ type: REDUCER_ACTION_TYPE.ADICIONAR, payload: { texto } });
+    setTexto('');
   };
 
   const onMarcar = (id: number) => {
-    setListaTarefas((prev) => {
-      return prev.map((tarefa) => {
-        if (tarefa.id === id) {
-          return { ...tarefa, feita: !tarefa.feita };
-        }
-        return tarefa;
-      });
-    });
+    dispatch({ type: REDUCER_ACTION_TYPE.MARCAR, payload: { idMarcar: id } });
   };
 
-  const onExcluir = (id: number) => {
-    setListaTarefas((prev) => {
-      return prev.filter((tarefa) => tarefa.id !== id);
-    });
+  const onRemover = (id: number) => {
+    dispatch({ type: REDUCER_ACTION_TYPE.REMOVER, payload: { idRemover: id } });
   };
 
   return (
@@ -89,17 +110,17 @@ function App() {
           </div>
         </div>
         <div className="flex flex-col justify-evenly items-center p-3">
-          {listaTarefas.length === 0 ? (
+          {state.listaTarefas.length === 0 ? (
             <p>Nenhuma tarefa encontrada</p>
           ) : (
             <>
-              {listaTarefas.map((tarefa) => {
+              {state.listaTarefas.map((tarefa) => {
                 return (
                   <Tarefa
                     key={tarefa.id}
                     tarefa={tarefa}
                     onMarcar={onMarcar}
-                    onExcluir={onExcluir}
+                    onRemover={onRemover}
                   />
                 );
               })}

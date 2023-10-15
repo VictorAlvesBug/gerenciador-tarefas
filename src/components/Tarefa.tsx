@@ -9,7 +9,7 @@ export type TTarefa = {
 type TarefaProps = {
     tarefa: TTarefa;
     onMarcar: (id: number) => void;
-    onExcluir: (id: number) => void;
+    onRemover: (id: number) => void;
 }
 
 type TClasseCondicional = {
@@ -24,7 +24,7 @@ function getClasse (classeCondicional: TClasseCondicional, condicao: boolean) {
         : `${classeCondicional.classePadrao} ${classeCondicional.classeFalse || ''}`
 }
 
-export function Tarefa({tarefa, onMarcar, onExcluir}: TarefaProps) {
+export function Tarefa({tarefa, onMarcar, onRemover}: TarefaProps) {
     const classesCondicionais = {
         checkbox: {
             classePadrao: "pr-4 h-4 appearance-none after:absolute transform after:w-4 after:h-4 after:border-2 after:border-blue-600",
@@ -37,7 +37,6 @@ export function Tarefa({tarefa, onMarcar, onExcluir}: TarefaProps) {
     };
 
   return <div 
-    onClick={e => onMarcar(tarefa.id)}
     className="w-full flex flex-row justify-start items-center gap-2 py-1">
         <Tooltip 
             id={`texto-tarefa-${tarefa.id}`}
@@ -47,6 +46,7 @@ export function Tarefa({tarefa, onMarcar, onExcluir}: TarefaProps) {
     <input 
         type="checkbox" 
         checked={tarefa.feita} 
+        onClick={e => onMarcar(tarefa.id)}
         className={getClasse(classesCondicionais.checkbox, tarefa.feita)} />
     <pre 
         data-tooltip-id={`texto-tarefa-${tarefa.id}`}
@@ -55,9 +55,9 @@ export function Tarefa({tarefa, onMarcar, onExcluir}: TarefaProps) {
     </pre>
     <button 
         type="button" 
-        onClick={e => onExcluir(tarefa.id)}
+        onClick={e => onRemover(tarefa.id)}
         className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 ml-auto">
-            Excluir
+            Remover
     </button>
   </div>;
 }
