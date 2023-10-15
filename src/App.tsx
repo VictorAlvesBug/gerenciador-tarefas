@@ -1,20 +1,21 @@
 import React, { useReducer, useState } from 'react';
 import { Tarefa, TTarefa } from './components/Tarefa';
 
-const initialState = { listaTarefas: [] as TTarefa[] };
+const initialState = {
+  texto: '',
+  listaTarefas: [] as TTarefa[],
+};
 
 const enum REDUCER_ACTION_TYPE {
   ADICIONAR,
   MARCAR,
   REMOVER,
+  ALTERAR_TEXTO,
 }
 
 type ReducerAction =
   | {
       type: REDUCER_ACTION_TYPE.ADICIONAR;
-      payload: {
-        texto: string;
-      };
     }
   | {
       type: REDUCER_ACTION_TYPE.MARCAR;
@@ -27,6 +28,12 @@ type ReducerAction =
       payload: {
         idRemover: number;
       };
+    }
+  | {
+      type: REDUCER_ACTION_TYPE.ALTERAR_TEXTO;
+      payload: {
+        texto: string;
+      };
     };
 
 function reducer(
@@ -35,15 +42,19 @@ function reducer(
 ): typeof initialState {
   switch (action.type) {
     case REDUCER_ACTION_TYPE.ADICIONAR:
-      if (action.payload.texto === '') return state;
+      if (state.texto === '') return state;
 
       const novaTarefa: TTarefa = {
         id: Date.now(),
-        texto: action.payload.texto || 'vazio',
+        texto: state.texto || 'vazio',
         feita: false,
       };
 
-      return { ...state, listaTarefas: [...state.listaTarefas, novaTarefa] };
+      return {
+        ...state,
+        texto: '',
+        listaTarefas: [...state.listaTarefas, novaTarefa],
+      };
 
     case REDUCER_ACTION_TYPE.MARCAR:
       return {
@@ -64,18 +75,22 @@ function reducer(
         ),
       };
 
+      case REDUCER_ACTION_TYPE.ALTERAR_TEXTO:
+        return {
+          ...state,
+          texto: action.payload.texto,
+        };
+
     default:
       throw new Error('Ação não encontrada');
   }
 }
 
 function App() {
-  const [texto, setTexto] = useState('');
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const onAdicionar = () => {
-    dispatch({ type: REDUCER_ACTION_TYPE.ADICIONAR, payload: { texto } });
-    setTexto('');
+    dispatch({ type: REDUCER_ACTION_TYPE.ADICIONAR });
   };
 
   const onMarcar = (id: number) => {
@@ -84,6 +99,13 @@ function App() {
 
   const onRemover = (id: number) => {
     dispatch({ type: REDUCER_ACTION_TYPE.REMOVER, payload: { idRemover: id } });
+  };
+
+  const onAlterarTexto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: REDUCER_ACTION_TYPE.ALTERAR_TEXTO,
+      payload: { texto: e.target.value },
+    });
   };
 
   return (
@@ -95,8 +117,8 @@ function App() {
             <input
               type="text"
               placeholder="Digite aqui..."
-              value={texto}
-              onChange={(e) => setTexto(e.target.value)}
+              value={state.texto}
+              onChange={onAlterarTexto}
               onKeyUp={(e) => e.key === 'Enter' && onAdicionar()}
               className="bg-gray-200 w-full px-2 py-1 outline-none cursor-pointer"
             />
