@@ -46,7 +46,7 @@ export function Tarefa({tarefa, onMarcar, onRemover}: TarefaProps) {
     <input 
         type="checkbox" 
         checked={tarefa.feita} 
-        onClick={e => onMarcar(tarefa.id)}
+        onChange={e => onMarcar(tarefa.id)}
         className={getClasse(classesCondicionais.checkbox, tarefa.feita)} />
     <pre 
         data-tooltip-id={`texto-tarefa-${tarefa.id}`}

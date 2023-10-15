@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { Tarefa, TTarefa } from './components/Tarefa';
 
 const initialState = {
@@ -75,11 +75,11 @@ function reducer(
         ),
       };
 
-      case REDUCER_ACTION_TYPE.ALTERAR_TEXTO:
-        return {
-          ...state,
-          texto: action.payload.texto,
-        };
+    case REDUCER_ACTION_TYPE.ALTERAR_TEXTO:
+      return {
+        ...state,
+        texto: action.payload.texto,
+      };
 
     default:
       throw new Error('Ação não encontrada');
@@ -87,7 +87,16 @@ function reducer(
 }
 
 function App() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, null, () => {
+    const listaTarefas: TTarefa[] = 
+      JSON.parse(localStorage.getItem('listaTarefas') || '[]')
+    initialState.listaTarefas = listaTarefas;
+    return initialState;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('listaTarefas', JSON.stringify(state.listaTarefas));
+  }, [state.listaTarefas]);
 
   const onAdicionar = () => {
     dispatch({ type: REDUCER_ACTION_TYPE.ADICIONAR });
