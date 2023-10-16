@@ -8,8 +8,8 @@ export type TTarefa = {
 
 type TarefaProps = {
     tarefa: TTarefa;
-    onMarcar: (id: number) => void;
-    onRemover: (id: number) => void;
+    onMarcar: () => void;
+    onRemover: () => void;
 }
 
 type TClasseCondicional = {
@@ -46,7 +46,7 @@ export function Tarefa({tarefa, onMarcar, onRemover}: TarefaProps) {
     <input 
         type="checkbox" 
         checked={tarefa.feita} 
-        onChange={e => onMarcar(tarefa.id)}
+        onChange={onMarcar}
         className={getClasse(classesCondicionais.checkbox, tarefa.feita)} />
     <pre 
         data-tooltip-id={`texto-tarefa-${tarefa.id}`}
@@ -55,7 +55,7 @@ export function Tarefa({tarefa, onMarcar, onRemover}: TarefaProps) {
     </pre>
     <button 
         type="button" 
-        onClick={e => onRemover(tarefa.id)}
+        onClick={onRemover}
         className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 ml-auto">
             Remover
     </button>
