@@ -8,5 +8,6 @@ Conceitos e ferramentas utilizadas:
 - **Typescript**;
 - **Tailwind**;
 - **useReducer**;
+- Hook Customizado **useLocalStorage**;
 
 Acesse: https://victoralvesbug.github.io/gerenciador-tarefas/

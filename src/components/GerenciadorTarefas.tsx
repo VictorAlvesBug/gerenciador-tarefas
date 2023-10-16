@@ -1,5 +1,6 @@
 import React, { useEffect, useReducer } from 'react';
 import { Tarefa, TTarefa } from './Tarefa';
+import useLocalStorage from './../hooks/useLocalStorage';
 
 const initialState = {
   texto: '',
@@ -63,17 +64,17 @@ function reducer(
 }
 
 export default function GerenciadorTarefas() {
+    const {setItem, getItem} = useLocalStorage<Object>('listaTarefas', []);
+
   const [state, dispatch] = useReducer(reducer, null, () => {
-    const listaTarefas: TTarefa[] = JSON.parse(
-      localStorage.getItem('listaTarefas') || '[]'
-    );
-    initialState.listaTarefas = listaTarefas;
+    console.log(getItem())
+    initialState.listaTarefas = getItem();
     return initialState;
   });
 
   useEffect(() => {
-    localStorage.setItem('listaTarefas', JSON.stringify(state.listaTarefas));
-  }, [state.listaTarefas]);
+    setItem(state.listaTarefas);
+  }, [state.listaTarefas, setItem]);
 
   return (
     <div className="w-full h-screen flex flex-col justify-start items-center pt-10 bg-gray-200">
