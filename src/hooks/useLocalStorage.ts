@@ -4,8 +4,6 @@
 
 import { useCallback, useRef } from "react";
 
-type TValor = string | Object;
-
 export default function useLocalStorage<TValor>(nomeItem: string, valorInicial: TValor) {
     const tipoValor = useRef(typeof valorInicial);
 
