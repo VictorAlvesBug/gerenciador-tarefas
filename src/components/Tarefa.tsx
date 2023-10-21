@@ -37,7 +37,7 @@ export function Tarefa({tarefa, onMarcar, onRemover}: TarefaProps) {
     };
 
   return <div 
-    className="w-full flex flex-row justify-start items-center gap-2 py-1">
+    className="flex flex-row items-center justify-start w-full gap-2 py-1">
         <Tooltip 
             id={`texto-tarefa-${tarefa.id}`}
             content={tarefa.texto} 
@@ -56,7 +56,7 @@ export function Tarefa({tarefa, onMarcar, onRemover}: TarefaProps) {
     <button 
         type="button" 
         onClick={onRemover}
-        className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 ml-auto">
+        className="px-2 py-1 ml-auto text-white bg-red-500 hover:bg-red-600">
             Remover
     </button>
   </div>;

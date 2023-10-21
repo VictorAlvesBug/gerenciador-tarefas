@@ -1,6 +1,7 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useRef } from 'react';
 import { Tarefa, TTarefa } from './Tarefa';
 import useLocalStorage from './../hooks/useLocalStorage';
+import { toast, Toaster } from 'react-hot-toast';
 
 const initialState = {
   texto: '',
@@ -19,7 +20,10 @@ function reducer(
 ): typeof initialState {
   switch (action.type) {
     case 'ADICIONAR':
-      if (state.texto === '') return state;
+      if (state.texto === ''){
+        toast.error("Digite sua tarefa primeiro");
+        return {...state};
+      }
 
       const novaTarefa: TTarefa = {
         id: Date.now(),
@@ -65,24 +69,29 @@ function reducer(
 
 export default function GerenciadorTarefas() {
     const {setItem, getItem} = useLocalStorage<Object>('listaTarefas', []);
+    const input = useRef<HTMLInputElement>(null);
 
   const [state, dispatch] = useReducer(reducer, null, () => {
-    console.log(getItem())
     initialState.listaTarefas = getItem();
     return initialState;
   });
+
+  useEffect(() => {
+    input.current?.focus();
+  }, []);
 
   useEffect(() => {
     setItem(state.listaTarefas);
   }, [state.listaTarefas, setItem]);
 
   return (
-    <div className="w-full h-screen flex flex-col justify-start items-center pt-10 bg-gray-200">
-      <div className="border border-gray-500 bg-white w-96 p-5">
-        <div className="flex flex-col justify-evenly items-center border-b border-b-gray-500">
+    <div className="flex flex-col items-center justify-start w-full h-screen pt-10 bg-gray-200">
+      <div className="p-5 bg-white border border-gray-500 w-96">
+        <div className="flex flex-col items-center border-b justify-evenly border-b-gray-500">
           <h1 className="text-4xl">Tarefas</h1>
-          <div className="flex flex-row justify-between items-center gap-2 w-full p-3">
+          <div className="flex flex-row items-center justify-between w-full gap-2 p-3">
             <input
+              ref={input}
               type="text"
               placeholder="Digite aqui..."
               value={state.texto}
@@ -93,18 +102,18 @@ export default function GerenciadorTarefas() {
                   });
               }}
               onKeyUp={(e) => e.key === 'Enter' && dispatch({ type: 'ADICIONAR' })}
-              className="bg-gray-200 w-full px-2 py-1 outline-none cursor-pointer"
+              className="w-full px-2 py-1 bg-gray-200 outline-none cursor-pointer"
             />
             <button
               type="button"
               onClick={() => dispatch({ type: 'ADICIONAR' })}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1"
+              className="px-2 py-1 text-white bg-blue-500 hover:bg-blue-600"
             >
               Adicionar
             </button>
           </div>
         </div>
-        <div className="flex flex-col justify-evenly items-center p-3">
+        <div className="flex flex-col items-center p-3 justify-evenly">
           {state.listaTarefas.length === 0 ? (
             <p>Nenhuma tarefa encontrada</p>
           ) : (
@@ -123,6 +132,7 @@ export default function GerenciadorTarefas() {
           )}
         </div>
       </div>
+      <Toaster position='bottom-right' />
     </div>
   );
 }

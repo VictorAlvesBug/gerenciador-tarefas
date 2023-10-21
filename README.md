@@ -9,5 +9,6 @@ Conceitos e ferramentas utilizadas:
 - **Tailwind**;
 - **useReducer**;
 - Hook Customizado **useLocalStorage**;
+- **React Hot Toast**;
 
 Acesse: https://victoralvesbug.github.io/gerenciador-tarefas/
